@@ -23,7 +23,10 @@ class _Parcial3State extends State<Parcial3> {
         'https://api.nasa.gov/planetary/apod?count=30&api_key=Fu4fyndsKezf2DcNzklirWZJ9mi0brbtJnCvZ2E8'));
     if (response.statusCode == 200) {
       final jsonList = json.decode(response.body) as List<dynamic>;
-      return jsonList.map((json) => Apod.fromJson(json)).toList();
+      return jsonList
+          .map((json) => Apod.fromJson(json))
+          .where((element) => element.media_type == "image")
+          .toList();
     } else {
       throw Exception('Failed to load apod list');
     }
@@ -32,9 +35,6 @@ class _Parcial3State extends State<Parcial3> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('NASA APOD List'),
-      ),
       body: Center(
         child: FutureBuilder<List<Apod>>(
           future: apodList,
@@ -112,18 +112,20 @@ class Apod {
   final String url;
   final String title;
   final String date;
+  final String media_type;
 
-  Apod({
-    required this.url,
-    required this.title,
-    required this.date,
-  });
+  Apod(
+      {required this.url,
+      required this.title,
+      required this.date,
+      required this.media_type});
 
   factory Apod.fromJson(Map<String, dynamic> json) {
     return Apod(
       url: json['url'],
       title: json['title'],
       date: json['date'],
+      media_type: json['media_type'],
     );
   }
 }
